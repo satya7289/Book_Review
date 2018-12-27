@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block title %} search  {% endblock %}
+
+
+
+{% block main %}
+
+
+<h1>This is search page</h1>
+
+<form method="post" action="{{url_for('search')}}">
+    <div class="form-group">
+
+        <select name="select">
+            <option selected="selected" >ISBN</option>
+            <option>TITLE</option>
+            <option>AUTHOR</option>
+            <option>YEAR</option>
+        </select>
+
+        <input type="search" name="search">
+
+
+
+    </div>
+</form>
+
+         {% if message %}
+            {{ message }}
+         {% endif %}
+
+{% endblock %}
+

@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %} login  {% endblock %}
+
+
+
+{% block main %}
+
+
+<h1>This is login page</h1>
+        <form method="post" action="{{url_for('login')}}">
+            <div class="form-group">
+            <p><label>username</label><input type=text name=username>
+            <p><label>password</label><input type=password name=password >
+                <p><input type=submit value=Login></input></p>
+            </div>
+        </form>
+
+<a href="{{url_for('reg')}}">registration</a>
+
+         {% if message %}
+            {{ message }}
+         {% endif %}
+
+{% endblock %}
+

@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %} registration  {% endblock %}
+
+
+
+{% block main %}
+
+
+<h1>This is registration page</h1>
+        <form method="post" action="{{ url_for('reg') }}">
+            <div class="form-group">
+            <p> <label>username</label><input type=text name=username></p>
+            <p> <label>password</label><input type=password name=password></p>
+            <p> <label>confirm_password</label><input type=password name=confirm_password></p>
+            <p> <input type=submit value=register></input></p>
+            </div>
+        </form>
+
+         {% if message %}
+            {{ message }}
+         {% endif %}
+
+{% endblock %}
+

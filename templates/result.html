@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %} result {% endblock %}
+
+
+
+{% block main %}
+
+
+<h1>This is result page</h1>
+
+
+        <div class="raw">
+            {% for res in result %}
+           <div class="col-sm-6">
+               <div class="card" style="width: 50rem;">
+                   <img class="card-img-top" src="image.png" alt="Card image cap">
+                   <div class="card-body">
+                      <h6 class="text-right">rating</h6>
+                      <h3 class="card-title">{{ res[2] }}</h3>
+                      <h4 class="card-subtitle">{{ res[3] }}</h4>
+                      <h4 class="primary-text">{{ res[4] }}</h4>
+                    <br>
+                      <a href="#" class="btn btn-primary col-sm-offset-10">More</a>
+                   </div>
+               </div>
+            </div>
+
+               {% endfor %}
+         </div>
+
+
+
+
+
+<style>
+    .card-body{
+               background-color:red;
+               }
+</style>
+
+
+{% endblock %}
+
