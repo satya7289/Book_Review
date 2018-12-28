@@ -82,7 +82,7 @@ def search():
         return render_template("search.html",message='enter the what you search')
     if(select=='ISBN'):
         try:
-            isbn = int(search) # print(select,search)
+            isbn = str(search) # print(select,search)
             result = db.execute('SELECT * FROM "book" WHERE isbn=(:isbn)',{"isbn":isbn}).fetchall()  # print(result)
             return render_template("result.html",result=result)
         except:
@@ -112,7 +112,7 @@ def search():
         return render_template("search.html",message='select to search')
 
 
-@app.route("/api/<int:isbn>")
+@app.route("/api/<string:isbn>")
 def get_api(isbn):
     #print(isbn)
     result = db.execute('SELECT * FROM "book" WHERE isbn=(:isbn)',{"isbn":isbn}).fetchone() #fetching detail related to book of query isbn value
@@ -132,6 +132,17 @@ def get_api(isbn):
         "review":34,
         "average_score":5.0
     })
+
+@app.route("/search/<string:isbn>", methods=["POST","GET"])
+def Review(isbn):
+    review = request.form.get('review')
+    point = request.form.get('point')
+    db.execute('INSERT INTO "review"(review,point) VALUES(:review, :point)',{"review":review, "point":point})
+    db.commit()
+
+
+
+    return render_template('review.html')
 
 
 @app.errorhandler(404)
