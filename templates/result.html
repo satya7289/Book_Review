@@ -21,7 +21,7 @@
                       <h4 class="card-subtitle">{{ res[3] }}</h4>
                       <h4 class="primary-text">{{ res[4] }}</h4>
                     <br>
-                      <a href="#" class="btn btn-primary col-sm-offset-10">More</a>
+                      <a href="{{ url_for('detail', isbn=res[1] ) }}" class="btn btn-primary col-sm-offset-10">More</a>
                    </div>
                </div>
             </div>

@@ -1,15 +1,31 @@
 {% extends "layout.html" %}
 
-{% block title %} registration  {% endblock %}
+{% block title %} index  {% endblock %}
 
 
 
 {% block main %}
 
+{% for res in result%}
 
-<h1>This is review page</h1>
 
-<form action="" method="post">
+{{ res }}
+
+
+{% endfor %}
+
+{% for res in review %}
+
+{% for ans in res %}
+
+{{ ans }}
+
+{% endfor %}
+{% endfor %}
+
+{{ isbn }}
+
+<form action="{{ url_for('Review', isbn=isbn ) }}" method="post">
 
 
     <div class="form-group">
@@ -30,6 +46,18 @@
 
 </form>
 
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+
+<ul class=flashes>
+    {% for message in messages %}
+    <li> {{ message }}</li>
+    {% endfor %}
+</ul>
+
+{% endif %}
+{% endwith %}
 
 {% endblock %}
 
