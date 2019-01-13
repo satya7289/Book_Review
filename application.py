@@ -1,4 +1,5 @@
-import os
+import os, requests
+
 
 from flask import Flask, session, render_template, request, redirect, url_for,jsonify, flash
 from flask_session import Session
@@ -40,6 +41,14 @@ def reg():
     confirm_password = request.form.get('confirm_password')
     result = db.execute('SELECT username FROM "users" ').fetchall()
     #print(result)
+   # print(username,password,confirm_password)
+    if(username=='') :
+        return render_template('registration.html',  message = 'Enter username')
+    if(password=='') :
+        return render_template('registration.html', message = 'Enter password')
+    if(confirm_password=='') :
+        return render_template('registration.html', message='Enter confirmed_password')
+
     if result is not None:
      for name in result:
         if(username==name[0]):
@@ -49,13 +58,15 @@ def reg():
        db.execute('INSERT INTO "users"(username,password) VALUES(:username,:password)', {"username": username,"password": secure_password})   # put into database
        db.commit()
 
-       return redirect(url_for('main'))   # if all going good
+       return redirect(url_for('login'))   # if all going good
     else:
        return render_template("registration.html", message='confirm_password must be same with password')  #if password and confirm_password dorsnot match
 
 
 @app.route("/login", methods=["POST","GET"])
 def login():
+    if request.method == 'GET':
+        return render_template('login.html')
     username = request.form.get('username')
     password = request.form.get('password')
     result = db.execute('SELECT password FROM "users" WHERE username=(:username)',{"username":username}).fetchone() #fetch password corressponding username
@@ -64,7 +75,7 @@ def login():
     elif(sha256_crypt.verify(str(password),result[0])): #verifying password
         #print(password)
         session['user_id'] = username
-        print(username,session.get('user_id'))
+        #print(username,session.get('user_id'))
         return redirect(url_for('main'))
     else:
         return render_template("login.html",message='username or password is wrong')  #if password doesnot match with username
@@ -78,10 +89,12 @@ def logout():
 
 @app.route("/search", methods=["POST","GET"])
 def search():
+    if request.method == 'GET':
+       return render_template('search.html')
     select = request.form.get('select')
     search = request.form.get('search')
     if(search==''):
-        return render_template("search.html",message='enter the what you search')
+        return render_template("search.html",message='Enter the what you search')
     if(select=='ISBN'):
         try:
             isbn = str(search) # print(select,search)
@@ -120,7 +133,16 @@ def detail(isbn):
     result = db.execute('SELECT isbn,title,author,year FROM "book" WHERE isbn=(:isbn) ',{"isbn":isbn}).fetchone()
     reviews = db.execute('SELECT review,point,username FROM "review" JOIN "users" ON users.id=review.user_id JOIN "book" ON book.id=review.book_id WHERE book.isbn=(:isbn)',{"isbn":isbn}).fetchall()
    # print( result,reviews,isbn)
-    return render_template('detail.html',result=result, review=reviews,isbn=isbn)
+    try:
+     res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "iJsPXyBl7VgAqFH44ntkA", "isbns": isbn})
+     if res.status_code != 200:
+        raise Exception("ERROR:api request unsuccessful")
+     data = res.json() # error have to check
+    # print(data, data['books'][0]['reviews_count'], data['books'][0]['average_rating'])
+    except:
+        pass
+
+    return render_template('detail.html',result=result, review=reviews,isbn=isbn, reviews_count = data['books'][0]['reviews_count'], average_rating = data['books'][0]['average_rating'])
 
 
 @app.route("/search/<string:isbn>", methods=["POST","GET"])
@@ -132,21 +154,28 @@ def Review(isbn):
         return redirect(url_for('login'))                                     # ....error in redirecting to the same page after login  and after reviewing redirecting to detail page
     username = session.get('user_id')        #get user_id
 
-    USERNAME = db.execute('SELECT username FROM "review" JOIN "users" ON users.id=review.user_id JOIN "book" ON book.id=review.book_id WHERE book.isbn=(:isbn)',{"isbn":isbn}).fetchall()  # checking if user already responses or not
-    print(USERNAME)
+    Data = db.execute(
+                          'SELECT username,book.id,users.id FROM "review" JOIN "users" ON users.id=review.user_id JOIN "book" ON book.id=review.book_id WHERE book.isbn=(:isbn)',
+                          {"isbn":isbn}
+                         ).fetchall()  # checking if user already responses or not
+    #print(Data)
+    Data_user = []              # extracting detail of all reviews and username in Data_user variable
+    for ans in Data:
+        print(ans,ans[0])
+        Data_user.append(ans[0])
 
-    if USERNAME:              # check for if user is already responses or not
+    if username in Data_user:              # check for if user is already responses or not
         flash('you have already reviewed')
         return redirect(url_for('detail', isbn=isbn))
 
+    book_id = Data[0][1]
     user_id = db.execute('SELECT id FROM "users" WHERE username=(:username)',{"username":username}).fetchone()  #fetching user_id from database
-    book_id = db.execute('SELECT id FROM "book" WHERE isbn=(:isbn)',{"isbn":isbn}).fetchone()          #fetching book_id from databse
-    if book_id is not None:                      #inserting review  and all stuffs to the database
-      db.execute('INSERT INTO "review" (review,point,book_id,user_id) VALUES(:review, :point, :book_id, :user_id)',{"review":review, "point":point,"book_id":book_id[0], "user_id":user_id[0]})
-      print(f'user_id{user_id[0]} , isbn_no {isbn},book_id{book_id[0]}, point{point}, review{review}')
-      db.commit()
-      return redirect(url_for('detail', isbn=isbn))    #if going all good then redirect it to the detail page
-    return page_not_found('not found book of this isbn number')  #else error not found
+                         #inserting review  and all stuffs to the database
+    db.execute('INSERT INTO "review" (review,point,book_id,user_id) VALUES(:review, :point, :book_id, :user_id)',{"review":review, "point":point,"book_id":book_id, "user_id":user_id[0]})
+    #print(f'user_id{user_id[0]} , isbn_no {isbn},book_id{book_id}, point{point}, review{review}')
+    db.commit()
+    return redirect(url_for('detail', isbn=isbn))    #if going all good then redirect it to the detail page
+
 
 
 @app.route("/api/<string:isbn>")

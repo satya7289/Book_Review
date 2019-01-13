@@ -2,19 +2,30 @@
 
 {% block title %} result {% endblock %}
 
+{% block style %}
+
+#result {
+      margin-top:100px;
+      padding:40px;
+      font-family: 'Righteous', cursive;
+      font-size: 30px;
+}
+
+
+ {% endblock %}
 
 
 {% block main %}
 
-
+<!--
 <h1>This is result page</h1>
-
+{{ result }}
 
         <div class="raw">
             {% for res in result %}
            <div class="col-sm-6">
                <div class="card" style="width: 50rem;">
-                   <img class="card-img-top" src="image.png" alt="Card image cap">
+                   <img class="card-img-top" src="" alt="Card image cap">
                    <div class="card-body">
                       <h6 class="text-right">rating</h6>
                       <h3 class="card-title">{{ res[2] }}</h3>
@@ -39,6 +50,48 @@
                }
 </style>
 
+-->
+
+
+
+
+
+<div class="container " >
+
+    <div class="row">
+        {% for res in result %}
+      <div class="col-sm-6">
+       <div class="card" style="width: 18rem;background-image:url('static/image/bookpage.jpg'); background-color:blue; ">
+        <div class="card-body">
+                      <h6 class="text-right">rating</h6>
+                      <h3 class="card-title">{{ res[2] }}</h3>
+                      <h4 class="card-subtitle">{{ res[3] }}</h4>
+                      <h4 class="primary-text">{{ res[4] }}</h4>
+                    <br>
+                      <a href="{{ url_for('detail', isbn=res[1] ) }}" class="btn btn-primary col-sm-offset-10">More</a>
+        </div>
+     </div>
+
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 {% endblock %}
-

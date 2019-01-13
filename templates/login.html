@@ -2,25 +2,43 @@
 
 {% block title %} login  {% endblock %}
 
+{% block style %}
+
+
+  #login {
+        margin-top:100px;
+        padding:40px;
+        font-family: 'Righteous', cursive;
+        font-size: 30px;
+        background-image: url("static/image/background2.jpg");
+        background-size: 100%;
+  }
+
+{% endblock %}
 
 
 {% block main %}
 
 
-<h1>This is login page</h1>
-        <form method="post" action="{{url_for('login')}}">
-            <div class="form-group">
-            <p><label>username</label><input type=text name=username>
-            <p><label>password</label><input type=password name=password >
-                <p><input type=submit value=Login></input></p>
-            </div>
-        </form>
 
-<a href="{{url_for('reg')}}">registration</a>
+<div class="container col-sm-6" id="login" >
 
-         {% if message %}
-            {{ message }}
-         {% endif %}
+<form method="post" action="{{ url_for('login') }}">
+    <div class="form-group">
+    <p><label>Username</label><input type=text name=username>
+    <p><label>Password</label><input type=password name=password >
+    <p>
+       <input type=submit value=Login>
+        <button><a href="{{ url_for('reg') }}" >Registration</a></button>
+    </p>
+
+    </div>
+    {% if message %}
+       {{ message }}
+    {% endif %}
+</form>
+
+</div>
 
 {% endblock %}
 

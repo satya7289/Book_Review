@@ -2,12 +2,24 @@
 
 {% block title %} search  {% endblock %}
 
+{% block style %}
 
+ #search {
+        margin-top:100px;
+        padding:40px;
+        padding-bottom:120px;
+        padding-left: 80px;
+        font-family: 'Righteous', cursive;
+        font-size: 30px;
+
+  }
+
+{% endblock %}
 
 {% block main %}
 
 
-<h1>This is search page</h1>
+<div class="container col-sm-6" id="search" >
 
 <form method="post" action="{{url_for('search')}}">
     <div class="form-group">
@@ -21,14 +33,15 @@
 
         <input type="search" name="search">
 
-
-
-    </div>
+  </div>
 </form>
 
-         {% if message %}
-            {{ message }}
-         {% endif %}
+{% if message %}
+   {{ message }}
+{% endif %}
+
+
+</div>
 
 {% endblock %}
 
